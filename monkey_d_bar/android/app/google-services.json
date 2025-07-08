@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "291464502602",
+    "project_id": "monkeydbar-c5693",
+    "storage_bucket": "monkeydbar-c5693.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:291464502602:android:4f8d0566f810c9eed175b3",
+        "android_client_info": {
+          "package_name": "com.example.monkey_d_bar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXYYbgnio-pbabYHI2JH4QzvSl5uNBp0c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
