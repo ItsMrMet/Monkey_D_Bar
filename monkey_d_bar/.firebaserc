@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "monkeydbar-c5693"
+  },
+  "targets": {
+    "monkeydbar-c5693": {
+      "hosting": {
+        "monkeydbar": [
+          "monkeydbar"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

@@ -1,1 +1,19 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"monkeydbar-c5693","appId":"1:291464502602:android:4f8d0566f810c9eed175b3","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"monkeydbar-c5693","configurations":{"android":"1:291464502602:android:4f8d0566f810c9eed175b3","ios":"1:291464502602:ios:b4fbc395120daed6d175b3","macos":"1:291464502602:ios:b4fbc395120daed6d175b3","web":"1:291464502602:web:d539f05e8863cc7ad175b3","windows":"1:291464502602:web:2e848126a027d336d175b3"}}}}}}
+{
+  "hosting": [
+    {
+      "target": "monkeydbar",
+      "public": "build/web",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ]
+}
