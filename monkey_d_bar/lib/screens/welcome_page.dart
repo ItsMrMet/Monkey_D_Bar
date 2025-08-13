@@ -3,8 +3,7 @@ import 'login_page.dart';
 import 'register_page.dart';
 
 class WelcomePage extends StatelessWidget {
-  final void Function(String faction) onLoginSuccess;
-  const WelcomePage({super.key, required this.onLoginSuccess});
+  const WelcomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +40,7 @@ class WelcomePage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => LoginPage(onLoginSuccess: onLoginSuccess),
+                      builder: (_) => const LoginPage(),
                     ),
                   );
                 },
@@ -59,7 +58,9 @@ class WelcomePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const RegisterPage()),
+                    MaterialPageRoute(
+                      builder: (_) => const RegisterPage(),
+                    ),
                   );
                 },
                 style: OutlinedButton.styleFrom(

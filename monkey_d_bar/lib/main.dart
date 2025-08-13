@@ -4,8 +4,6 @@ import 'firebase_options.dart'; // Importa tu archivo
 
 import 'package:monkey_d_bar/theme.dart';
 import 'screens/welcome_page.dart';
-import 'screens/login_page.dart';
-import 'screens/register_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,11 +43,44 @@ class _AppRootState extends State<AppRoot> {
       title: 'Monkey D. Bar',
       debugShowCheckedModeBanner: false,
       theme: _currentTheme,
-      home: WelcomePage(onLoginSuccess: switchTheme),
-      routes: {
-        '/login': (_) => LoginPage(onLoginSuccess: switchTheme),
-        '/register': (_) => const RegisterPage(),
-      },
+      home: WelcomePageWrapper(
+        onThemeChange: switchTheme,
+      ),
     );
+  }
+}
+
+class WelcomePageWrapper extends StatelessWidget {
+  final void Function(String faction) onThemeChange;
+  const WelcomePageWrapper({super.key, required this.onThemeChange});
+
+  @override
+  Widget build(BuildContext context) {
+    return WelcomePageWrapperInner(onThemeChange: onThemeChange);
+  }
+}
+
+// Esto permite pasar el callback de tema a login/register y a CardPage
+class WelcomePageWrapperInner extends StatelessWidget {
+  final void Function(String faction) onThemeChange;
+  const WelcomePageWrapperInner({super.key, required this.onThemeChange});
+
+  @override
+  Widget build(BuildContext context) {
+    return WelcomePageCustom(
+      onThemeChange: onThemeChange,
+    );
+  }
+}
+
+class WelcomePageCustom extends StatelessWidget {
+  final void Function(String faction) onThemeChange;
+  const WelcomePageCustom({super.key, required this.onThemeChange});
+
+  @override
+  Widget build(BuildContext context) {
+    return WelcomePage(
+        // Ahora WelcomePage ya no recibe onLoginSuccess, solo navegamos directo
+        );
   }
 }

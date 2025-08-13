@@ -1,111 +1,127 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import '../services/auth_service.dart';
+import 'card_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  _RegisterPageState createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _pinController = TextEditingController();
   String? _selectedFaction;
 
-  void _registerUser() async {
+  final AuthService _authService = AuthService();
+
+  // Mapa de facciones para mostrar emojis en UI pero guardar clave limpia
+  final Map<String, String> factions = {
+    'pirata': '🏴‍☠️ Pirata',
+    'marine': '⚓ Marine',
+  };
+
+  void _register() async {
     final username = _usernameController.text.trim();
-    final password = _passwordController.text.trim();
+    final pin = _pinController.text.trim();
 
-    if (username.isEmpty || password.length != 4 || _selectedFaction == null) {
-      _showSnackbar('Completa todos los campos correctamente.');
+    if (username.isEmpty || pin.isEmpty || _selectedFaction == null) {
+      _showSnackbar('Completa todos los campos.');
       return;
     }
 
-    final userRef = FirebaseFirestore.instance.collection('users');
-    final existingUser = await userRef.doc(username).get();
-
-    if (existingUser.exists) {
-      _showSnackbar('El usuario ya existe.');
+    if (pin.length != 6) {
+      _showSnackbar('El PIN debe tener 6 dígitos.');
       return;
     }
 
-    await userRef.doc(username).set({
-      'username': username,
-      'password': password,
-      'faction': _selectedFaction,
-    });
+    final error = await _authService.createUser(
+      username: username,
+      pin: pin,
+      faction: _selectedFaction!,
+    );
 
-    _showSnackbar('Usuario creado con éxito. Ahora puedes iniciar sesión.');
-    Navigator.pop(context);
+    if (error != null) {
+      _showSnackbar(error);
+      return;
+    }
+
+    _showSnackbar('Usuario registrado exitosamente');
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            CardPage(username: username, faction: _selectedFaction!),
+      ),
+    );
   }
 
-  void _showSnackbar(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    Theme.of(context);
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Crear cuenta'),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 48.0),
+      appBar: AppBar(title: const Text('Crear Usuario')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const SizedBox(height: 20),
             TextField(
               controller: _usernameController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Usuario',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
+                border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             TextField(
-              controller: _passwordController,
+              controller: _pinController,
+              decoration: const InputDecoration(
+                labelText: 'PIN (6 dígitos)',
+                border: OutlineInputBorder(),
+              ),
               obscureText: true,
-              maxLength: 4,
+              maxLength: 6,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Contraseña (4 dígitos)',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+            ),
+            const SizedBox(height: 20),
+            InputDecorator(
+              decoration: const InputDecoration(
+                labelText: 'Facción',
+                border: OutlineInputBorder(),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _selectedFaction,
+                  hint: const Text('Selecciona una facción'),
+                  items: factions.entries
+                      .map((entry) => DropdownMenuItem(
+                            value: entry.key, // pirata / marine
+                            child: Text(entry.value), // 🏴‍☠️ Pirata / ⚓ Marine
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedFaction = value;
+                    });
+                  },
                 ),
-                counterText: '',
               ),
             ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _selectedFaction,
-              hint: const Text('Selecciona tu facción'),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              items: const [
-                DropdownMenuItem(value: 'pirata', child: Text('Pirata')),
-                DropdownMenuItem(value: 'marine', child: Text('Marine')),
-              ],
-              onChanged: (value) => setState(() => _selectedFaction = value),
-            ),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _registerUser,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  textStyle: const TextStyle(fontSize: 18),
-                ),
-                child: const Text('Crear usuario'),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: _register,
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0),
+                child: Text('Crear Cuenta'),
               ),
             ),
           ],
